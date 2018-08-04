@@ -1,0 +1,92 @@
+<style>
+  #adduser form{
+    padding-top: 25px
+  }
+
+  .nav-tabs{
+    border-bottom: none;
+  }
+
+  @media screen and (max-width: 1070px) {
+    .container {
+      max-width: 90%;
+      padding-left: 0;
+      padding-right: 0;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .container {
+      max-width: 95%;
+      margin: auto;
+    }
+  }
+</style>
+<div class="container">
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <a class="nav-link" href="/user/admin-users">Edit Users</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link active" href="#">Add User</a>
+    </li>
+  </ul>
+  <div id="adduser">
+    <form class="form-horizontal border shadow border-radius padding5" method="post" action='/user/adduser'>
+      <div class="form-group">
+        <div class="col-sm-12">
+          <input type="text" class="form-control " id="name" placeholder="Username" name="username">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-12">
+          <input type="email" class="form-control " id="inputEmail" placeholder="Email" name="email">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-12">
+          <input type="password" class="form-control " id="inputPassword" placeholder="Password" name="password">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-12">
+          <input type="password" class="form-control " id="inputConfirmation" placeholder="Confirm Password" name="confirmation">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+          <button type="submit" class="btn btn-default shadow">Add User</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+<% if ( typeof message !== "undefined") { %>
+  <div id="message" class="modal fade" tabindex="-1" role="dialog" id="message">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <h4 class="modal-title"><%= title %></h4>
+        </div>
+        <div class="modal-body">
+          <p>
+            <%= message %>
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+  </div>
+  <!-- /.modal -->
+
+<script>
+  $('#message').modal();
+</script>
+<% }  %>

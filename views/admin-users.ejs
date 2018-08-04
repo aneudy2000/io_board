@@ -1,0 +1,250 @@
+<style>
+  .pointer {
+    cursor: pointer;
+  }
+
+  input {
+    width: 100%;
+    border-top: none;
+    border-right: none;
+    border-left: none;
+  }
+  
+  .user-row {
+    margin-bottom: 5px;
+    width: 100%;
+  }
+
+  .username {
+    width: 17%;
+  }
+
+  .email {
+    width: 28%;
+  }
+
+  .checkbox {
+    width: 9%;
+  }
+
+  .button {
+    width: 14%;
+  }
+
+  .row {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .nav-tabs{
+    border-bottom: none;
+  }
+
+  #editusers {
+    padding: 15px;
+  }
+
+  #users-table {
+    overflow: auto;
+    height: 600px;
+    width: 100%;
+  }
+
+  .user-row div {
+    margin-right: 1%;
+  }
+
+  @media screen and (max-width: 1070px) {
+    .container {
+      max-width: 90%;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    .username {
+      width: 15%;
+      margin-right: 4px;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .container {
+      max-width: 95%;
+      margin: auto;
+    }
+  }
+
+  @media screen and (max-width: 524px) {
+    #users-headers > div > div {
+      font-size: 12px;
+    }
+
+    #users-table > div > div > button {
+      font-size: 10px;
+    }
+
+    #users-table > div > div > input {
+      font-size: 10px;
+    }
+
+    #editusers {
+      padding: 15px 0 15px 5px;
+    }
+
+    .button {
+      width: 16%;
+    }
+  }
+</style>
+<div class="container">
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <a class="nav-link active" href="#">Edit Users</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" href="/adduser">Add User</a>
+    </li>
+  </ul>
+  <div id ="editusers" class="border border-radius shadow">
+    <div id="users-headers" class="users row">
+      <div class="user-row row">
+        <div class="username">Username</div>
+        <div class="email">Email</div>
+        <div class="checkbox">Admin</div>
+        <div class="checkbox">Disabled</div>
+        <div class="button"></div>
+        <div class="button"></div>
+      </div>
+    </div>
+    <div id="users-table" class="row" >
+      <% _.forEach(users, function(user) { %>
+      <div id="row_<%= user.id %>" class="user-row row">
+        <div class="username">
+          <input type="text" id="username_<%= user.id %>" value="<%= user.username %>">
+        </div>
+        <div class="email">
+          <input type="text" id="email_<%= user.id %>" value="<%= user.email %>" name="email">
+        </div>
+        <div class="checkbox">
+          <input type="checkbox" class="mdl-checkbox__input" onclick="updateAdmin(<%= user.id %>, '<%= user.username %>', this)" 
+          value="<%= user.admin %>" <% if (user.admin) { %> checked <% } %>>
+        </div>
+        <div class="checkbox">
+          <input type="checkbox" class="mdl-checkbox__input" onclick="udpateDisabled(<%= user.id %>, '<%= user.username %>', this)" 
+          value="<%= user.disabled %>" <% if (user.disabled) { %> checked <% } %>>
+        </div>
+        <div class="button">
+          <button class="btn btn-default" onclick="updateUser(<%= user.id %>)" data-toggle="modal"
+            data-target="#message">Update
+          </button>
+        </div>
+        <div class="button">
+          <button class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete"
+          data-id="<%= user.id %>" data-username="<%= user.username %>" data-row="#row_<%= user.id %>">
+            Delete
+          </button>
+        </div>
+      </div>
+      <% }); %>
+    </div>
+  </div>
+</div>
+<!-- Error message modal -->
+<div id="message" class="modal fade" tabindex="-1" role="dialog" id="message">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Confirm deletee user modal -->
+<div id="confirm-delete" class="modal fade" tabindex="-1" role="dialog" id="message">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button id="confirm-delete-button" type="button" class="btn btn-danger" data-dismiss="modal">Yes</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  $('#confirm-delete').on('show.bs.modal', function(event) {
+    var button = $(event.relatedTarget);
+    var id = button.data('id');
+    var username = button.data('username');
+    var row = button.data('row');
+    var modal = $(this);
+    modal.find('.modal-body p').text(
+      'Are you sure you want to permannently delete ' + username 
+      + '? This will also delete their history.');
+    modal.find('#confirm-delete-button').attr('onclick', 'deleteUser(' + id + ', "' + row + '")');
+  });
+
+  function deleteUser(id, element) {
+    io.socket.delete('/user/delete/' + id);
+    $(element).remove();
+  }
+
+  function updateAdmin(id, username, input) {
+    if ($(input).attr('value') === 'true') {
+      $(input).attr('value', 'false');
+    } else {
+      $(input).attr('value', 'true');
+    }
+    io.socket.put('/user/update-admin/' + id, {
+      id: id,
+      username: username,
+      admin: $(input).attr('value')
+    }, function(data) {
+      $('.modal-body p').text(data);
+      $('#message').modal();
+    });
+  }
+
+  function udpateDisabled(id, username, input) {
+    if ($(input).attr('value') === 'true') {
+      $(input).attr('value', 'false');
+    } else {
+      $(input).attr('value', 'true');
+    }
+    io.socket.put('/user/update-disabled/' + id, {
+      id: id,
+      username: username,
+      disabled: $(input).attr('value')
+    }, function(data) {
+      $('.modal-body p').text(data);
+      $('#message').modal();
+    });
+  }
+
+  function updateUser(id) {
+    var username = $('#username_' + id).val();
+    var email = $('#email_' + id).val();
+    io.socket.put('/user/update/' + id, {
+      username: username,
+      email: email
+    }, function (data) {
+      $('.modal-body p').text(data);
+      $('#message').modal();
+    });
+  }
+</script>

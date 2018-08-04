@@ -1,0 +1,180 @@
+<style>
+    #lookup {
+        width: 20%;
+    }
+
+    #history {
+        width: 75%;
+    }
+
+    #history, #lookup {
+        margin: 7px;
+        float:left;
+    }
+
+    #history-search {
+        margin-left: 0;
+    }
+
+    #history-scroll, #lookup-scroll {
+        width: 100%;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        height: 590px;
+        margin-bottom: 5px;
+    }
+
+    #search-field, #lookup-field {
+        width: 100%;
+        margin: 5px 5px 5px 0;
+        padding: 7px 10.5px;
+        border: 1px solid #ebebeb;
+        border-radius: 5px;
+    }
+
+    #history-table {
+        width: 100%;
+    }
+    #history-table thead th{
+        vertical-align: top;
+        border-bottom: none;
+    }
+
+    #selected-username {
+        color: #008aff;
+    }
+
+    #lookup-table tr {
+        border-bottom: 1px solid #ededed;
+    }
+
+    #lookup-table tr td {
+        font-size: 18px;
+        line-height: 30px;
+    }
+
+    #lookup-table tr td:hover {
+        cursor: pointer;
+        background: #9ddafc;
+        color: #fff;
+    }
+
+    @media screen and (max-width: 850px) {
+
+        #lookup, #history, #history-table, #history-scroll, #lookup-table {
+            min-width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #lookup-scroll {
+            height: 100px;
+        }
+
+        #lookup, #history {
+            margin-top: 0;
+        }
+    }
+</style>
+<div class="container-fluid">
+    <div id="lookup" class="col-3 shadow border border-radius">
+        <input type="text" id="lookup-field" onkeyup="searchLookup()" placeholder="Search User">
+        <div id="lookup-scroll">
+            <table id="lookup-table">
+                <tbody>
+                    <% _.forEach(users, function(user) { %>
+                        <tr>
+                            <td class="lookup_name" id="<%= user.id %>">
+                                <%= user.username %>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="history" class="col-9 shadow border border-radius">
+        <input type="text" id="search-field" onkeyup="searchHistory()" placeholder="Search Description">
+        <h6 id="selected-username"></h6>
+        <div id="history-scroll">
+            <table id="history-table" class="table table-condensed">
+                <thead>
+                    <th>Description</th>
+                    <th>Time</th>
+                    <th>Car</th>
+                    <th>Date Saved</th>
+                </thead>
+                <tbody id="history_tbody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script>
+    $('.lookup_name').click(function() {
+        let id = $(this).attr('id');
+        let username = $(this).text();
+        let tbody = document.getElementById('history_tbody');
+        let selected_username = document.getElementById('selected-username');
+        tbody.innerHTML = "";
+        selected_username.innerHTML = "";
+        $.get('/history/' + id, function(data, status) {
+            if (!data.records) {
+                selected_username.innerHTML = '<span style="color:red">No history found for ' + 
+                    username + '</span>';
+            } else {
+                selected_username.innerHTML = username + '\'s history' ;
+                data.records.forEach(function(r) {
+                    let createdAt = new Date(r.createdAt);
+                    let formattedDate = createdAt.toLocaleString();
+                    tbody.insertAdjacentHTML('afterbegin',
+                            '<tr><td>' + r.description + '</td>' +
+                            '<td>' + r.time + '</td>' +
+                            '<td>' + r.car + '</td>' +
+                            '<td>' + formattedDate + '</td></tr>'
+                    );
+                });
+            }
+        });
+    });
+    
+    function searchLookup() {
+        let input, filter, table, tr, td, i;
+        input = document.getElementById("lookup-field");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("lookup-table");
+        tr = table.getElementsByTagName("tr");
+
+        // Loop through all table rows, and hide those who don't match the search query
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[0];
+            if (td) {
+                if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+
+    function searchHistory() {
+        let input, filter, table, tr, td, i;
+        input = document.getElementById("search-field");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("history-table");
+        tr = table.getElementsByTagName("tr");
+
+        // Loop through all table rows, and hide those who don't match the search query
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[1];
+            if (td) {
+                if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+</script>

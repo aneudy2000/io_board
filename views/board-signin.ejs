@@ -1,0 +1,70 @@
+<style>
+    .jumbotron {
+        margin-top: 10%;
+        background: #fff;
+        border: 1px solid rgba(0, 131, 212, 0.48);
+        border-radius: 10px;
+        box-shadow: 0 0 4px rgba(0, 0, 0, .14), 0 4px 8px rgba(0, 0, 0, .28);
+    }
+
+    h5 {
+        text-shadow: 0 0 2px rgba(0, 0, 0, .14), 0 2px 6px rgba(0, 0, 0, .28);
+    }
+
+    body {
+        background: url(../images/beach2.jpg);
+        /*#68779c*/
+        background-repeat: no-repeat;
+    }
+</style>
+
+<div class="container">
+    <div class="jumbotron">
+        <form class="form-horizontal" method="post" action='/board/signin'>
+            <h1>io_board</h1>
+            <p>Realtime In/Out Board App</p>
+            <div class="form-group">
+                <label for="inputPassword" class="col-sm-2 control-label">Password</label>
+                <div class="col-sm-10">
+                    <input type="password" class="form-control" id="inputPassword" name="password">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-8">
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <% if ( typeof message !== "undefined") { %>
+        <div id="message" class="modal fade" tabindex="-1" role="dialog" id="message">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">
+                            <%= title %>
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            <%= message %>
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div>
+        <!-- /.modal -->
+
+        <script>
+            $('#message').modal();
+        </script>
+        <% }  %>
+</div>

@@ -1,0 +1,35 @@
+<style>
+    img {
+        width: 30%;
+    }
+</style>
+<div class="container">
+    <h4>Board Settings</h4>
+    <% _.forEach(settings, function(setting) { %>
+    <form action="/settings/update" method="POST">
+        <div class="row">
+            <div class="col-8">
+                <label>Primary Color:</label>
+                <input type="color" name="boardPrimaryColor" value="<%= setting.boardPrimaryColor %>">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <label>Background Image:</label>
+                <input type="file" name="boardBackgroundImage" accept="image/*">
+                
+            </div>
+        </div>
+        <div class="row">
+            <class="col-4">
+                <img src="../images/<%= setting.boardBackgroundImage %>" id="bgimage">
+            </class>
+        </div>
+        <div class="row">
+            <div class="col-4">
+                <button class="btn btn-default" type="submit">Update Settings</button>
+            </div>
+        </div>
+    </form>
+    <% }); %>
+</div>

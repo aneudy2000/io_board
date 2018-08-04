@@ -1,0 +1,315 @@
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/dataTables.material.min.css">
+<style>
+  body {
+    font-family: 'PT Sans', sans-serif;
+  }
+
+  .name {
+    background: #F7F7F9;
+    cursor: pointer;
+    box-sizing: border-box;
+    width: 52.48px;
+  }
+
+  .in {
+    background: rgb(33, 150, 243);
+    color: #fff;
+    border: 1px solid rgb(33, 150, 243);
+    font-weight: bold;
+    box-sizing: border-box;
+  }
+
+  input,
+  select {
+    background: none;
+    box-sizing: border-box;
+    white-space: pre-wrap;
+  }
+
+  .no-border {
+    border: none;
+  }
+
+  .row-block, #status-row {
+    margin-top: 5px;
+    background: rgba(185, 226, 255, 0.25);
+    padding: 5px;
+    border-radius: 5px;
+  }
+
+  #datatable {
+    margin: 0 !important;
+    max-width: 100% !important;
+    table-layout: fixed;
+  }
+
+  #datatable tbody tr {
+    border: 1px solid #ededed;
+  }
+
+  .car-column {
+    padding-right: 15px;
+  }
+
+  .mdl-grid {
+    padding: 0px;
+    width: 100%;
+  }
+
+  .mdl-cell--6-col {
+    width: 100%;
+  }
+
+  #datatable_filter input {
+    width: 100%;
+  }
+
+  .dataTables_scrollBody {
+    overflow-x: hidden !important;
+  }
+
+  @media screen and (min-width: 840px) {
+    .mdl-grid {
+      padding: 0px;
+    }
+  }
+
+  @media screen and (max-width: 840px) {
+    #status-row {
+      display: grid;
+      grid-template-columns: 15% 15% 68% !important;
+      grid-template-rows: 50px 50px !important;
+      grid-gap: 1%;
+    }
+
+    .time {
+      grid-column-start: 1;
+      grid-column-end: 3;
+    }
+  }
+
+
+  @-moz-document url-prefix() {
+    fieldset {
+      display: table-cell;
+    }
+  }
+
+  .attendance, #status-row, .name {
+    box-shadow: 0 1px 5px 0 rgba(104, 103, 103, 0.14);
+  }
+
+  #datatable_filter>label>input{
+    box-shadow: 0 1px 5px 0 rgba(104, 103, 103, 0.14);
+  }
+
+  #status-row {
+    display: grid;
+    grid-template-columns: 10% 10% 40% 10% 20%;
+    grid-template-rows: 50px;
+    grid-gap: 2%;
+  }
+
+  #status-row input, #status-row>.name {
+    width: 100%;
+  }
+
+  #displayname, .name, .description, .time, .car {
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+
+  #displayname {
+    margin: auto;
+    font-size: 1.4em;
+  }
+</style>
+
+<div class="container-fluid">
+  <div class="attendance row-block">
+    <label>Circle of Care</label>
+    <div class="progress">
+      <div class="progress-bar" role="progressbar" aria-valuenow="2" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: 0%;">0%</div>
+    </div>
+    <div id="peopleOut"></div>
+  </div>
+  <div id="status-row" id="<%= me.id %>">
+    <label id="displayname"><%= me.username %></label>
+    <div class="name btn <% if (me.is_in) { %> in" <% } %> id="name_
+      <%=me.id %>" onclick="updateCurrentInOutStatus(this)">
+        <% if (me.is_in) { %> IN
+          <% } else { %> OUT
+            <% } %>
+    </div>
+    <div class="description">
+      <input type="text" class="form-control" id="description_<%= me.id %>" value="<%= me.description %>" onkeyup="updateCurrentDescription(this)"
+        placeholder="description">
+    </div>
+    <div class="time" id="">
+      <input type="text" class="form-control" id="time_<%= me.id %>" value="<%= me.time %>" onkeyup="updateCurrentTime(this)" placeholder="time">
+    </div>
+    <div class="car" id="car_<%= me.id %>">
+      <select onchange="updateCurrentCar(this)" class="form-control">
+            <option value=""></option>
+            <% _.forEach(cars, function(car) { %>
+            <option value="<%= car.car %>"><%= car.car %></option>
+            <% }); %>
+            <option value="<%= me.car %>" selected="selected"><%= me.car %></option>
+        </select>
+    </div>
+  </div>
+  <table id="datatable" class="display" width="100%" cellspacing="0">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th class="time-column">Time</th>
+        <th class="car-column">Car</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%
+      var totalPeopleIn = 0;
+      var totalPeopleOut = 0;
+
+      _.forEach(currentstatus, function(status) {
+        if (status.is_in) {
+            totalPeopleIn += 1;
+          } else {
+            totalPeopleOut +=1;
+          }
+        if (status.id !== me.id) {
+      %>
+        <tr id="name_<%= status.id %>" class="<% if (status.is_in) { %> in <% } %>">
+          <td>
+            <%= status.username %>
+          </td>
+          <td id="description_<%= status.id %>">
+            <%= status.description %>
+          </td>
+          <td id="time_<%= status.id %>">
+            <%= status.time %>
+          </td>
+          <td id="car_<%= status.id %>">
+            <%= status.car %>
+          </td>
+        </tr>
+        <% }}); %>
+    </tbody>
+  </table>
+</div>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.15/js/dataTables.material.min.js"></script>
+<script>
+  var peopleIn = <%= totalPeopleIn %>;
+  var peopleOut = <%= totalPeopleOut %>;
+
+  function updateCurrentInOutStatus(name) {
+    var id = $(name).parent().parent().attr('id');
+
+    $(name).toggleClass('in');
+    if ($(name).hasClass('in')) {
+      io.socket.put('/currentstatus/name/' + id, {
+        is_in: "true"
+      });
+      $(name).text("IN");
+      peopleIn += 1;
+      peopleOut -= 1;
+    } else {
+      io.socket.put('/currentstatus/name/' + id, {
+        is_in: "false"
+      });
+      $(name).text("OUT");
+      peopleOut += 1;
+      peopleIn -= 1;
+    }
+    updateInOutTotal();
+  }
+
+  function updateCurrentDescription(description) {
+    var id = $(description).parent().parent().parent().attr('id');
+    io.socket.put('/currentstatus/description/' + id, {
+      description: $(description).val()
+    });
+  }
+
+  function updateCurrentTime(time) {
+    var id = $(time).parent().parent().parent().attr('id');
+    io.socket.put('/currentstatus/time/' + id, {
+      time: $(time).val()
+    });
+  }
+
+  function updateCurrentCar(car) {
+    var id = $(car).parent().parent().parent().attr('id');
+    io.socket.put('/currentstatus/car/' + id, {
+      car: $(car).val()
+    });
+  }
+
+  io.socket.on('is_in', function (data) {
+    $('#name_' + data.id).toggleClass('in');
+    if (data.is_in) {
+      peopleIn += 1;
+      peopleOut -= 1;
+    } else {
+      peopleOut += 1;
+      peopleIn -= 1;
+    }
+    updateInOutTotal();
+  });
+
+  io.socket.on('description', function (data) {
+    var type = document.getElementById("description_" + data.id).nodeName;
+    if (type === 'INPUT') {
+      $('#description_' + data.id).val(data.description);
+    } else {
+      $('#description_' + data.id).text(data.description);
+    }
+  });
+
+  io.socket.on('time', function (data) {
+    var type = document.getElementById("time_" + data.id).nodeName;
+    if (type === 'INPUT') {
+      $('#time_' + data.id).val(data.time);
+    } else {
+      $('#time_' + data.id).text(data.time);
+    }
+  });
+
+  io.socket.on('car', function (data) {
+    var type = document.getElementById("car_" + data.id).nodeName;
+    if (type === 'TD') {
+      $('#car_' + data.id).text(data.car);
+    } else {
+      $('#car_' + data.id + ' option[selected]').removeAttr('selected', 'selected');
+      $('#car_' + data.id + ' option[value="' + data.car + '"]').remove();
+      $('#car_' + data.id + ' select').append('<option value="' + data.car + '"selected>' + data.car + '</option>');
+    }
+  });
+
+  $(document).ready(function () {
+    $('#datatable').DataTable({
+      scrollY: 500,
+      paging: false,
+      responsive: true,
+      columnDefs: [
+        { targets: 1, className: 'description-column' },
+        { targets: 3, className: 'car-column' },
+        { targets: 2, className: 'time-column' }
+      ]
+    });
+
+    $('#datatable_filter input').focus();
+  });
+
+  function updateInOutTotal() {
+    $('#peopleOut').text('Out: ' + peopleOut + '/' + (peopleIn + peopleOut));
+    $('.progress').html('<div class="progress-bar" role="progressbar" aria-valuenow="' + (peopleIn) +
+      '" aria-valuemin="0" aria-valuemax="' + (peopleIn + peopleOut) + '" style="min-width: 2em; width: ' +
+      (peopleIn / (peopleIn + peopleOut)) * 100 + '%;">' + peopleIn + "/" + (peopleIn + peopleOut) + '</div>');
+  }
+
+  updateInOutTotal();
+
+</script>

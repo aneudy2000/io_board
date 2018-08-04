@@ -1,0 +1,26 @@
+<style>
+    .signout {
+      width: 50%;
+      margin: auto;
+      margin-top: 10%;
+      border: 1px solid #ededed;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 0 4px rgba(0,0,0,.14), 0 4px 8px rgba(0,0,0,.28);
+    }
+
+    form {
+      margin-top: 20px;
+    }
+  </style>
+<div class = "container-fluid">
+  <div class="signout">
+    <div class="panel-heading text-center">
+      <strong> Are you sure you want to sign out?</strong>
+    </div>
+    <div class = "text-center">
+      <form action="/logout" method="POST">
+        <button class="btn btn-primary" type="submit">Sign me out</button>
+      </form>
+  </div>
+</div>

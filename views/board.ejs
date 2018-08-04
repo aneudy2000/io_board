@@ -1,0 +1,416 @@
+<style>
+    body {
+        font-size: 25px;
+        padding: 0;
+        font-weight: 700;
+        opacity: .7;
+        background-image: url('../images/spring.jpg');
+        background-size: cover;
+        font-family: 'PT Sans', sans-serif;
+    }
+
+    #board-container {
+        width: 1910px;
+        height: 1040px;
+        margin: auto;
+        background-color: white;
+        opacity: 1; 
+    }
+
+    header {
+        color: #fff;
+        height: 30px;
+        font-size: 24px;
+        margin-bottom: 1px solid #ebebeb;
+        width: 33.3%;
+        float: left;
+        border-left: 1px solid #fff;
+    }
+    .rows-container {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        height: 1040px;
+        width: 100%;
+        list-style: none;
+        padding-left: 0;
+        margin-bottom: 0;
+    }
+
+    header h3 {
+        margin-bottom: 0px;
+        margin-top: 0px;
+        background-color: /*<%= style.header.background %>*/#aa4a99;
+        color: /*<%= style.header.color %>*/#fff;
+        font-size: 20px;
+        height: 25px !important;
+    }
+
+    .font {
+        font-family: 'PT Sans', sans-serif;
+        font-weight: bold;
+    }
+
+    .name {
+        width: 18%;
+        box-sizing: border-box;
+    }
+
+    .description {
+        width: 61.5%;
+        box-sizing: border-box;
+    }
+
+    .time {
+        width: 12.5%;
+        box-sizing: border-box;
+    }
+
+    .car {
+        width: 8%;
+        box-sizing: border-box;
+    }
+
+    .smaller-font {
+        font-size: 20px;
+    }
+
+    .smaller-name {
+        font-size: 23px;
+    }
+
+    .smaller-time {
+        font-size: 19px;
+    }
+
+    .column {
+        float: left;
+        padding-left: 2px;
+        padding-right: 2px;
+        border-bottom: 1px solid #ededed;
+        border-right: 1px solid #ededed;
+        height: 30px;
+    }
+
+    input, select {
+        width: 100%;
+        margin: 0px;
+        border: 0px;
+        -moz-appearance: none;
+    }
+
+    .namebtn {
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .border {
+        border: 1px solid lightskyblue;
+        box-sizing: border-box;
+    }
+
+    .is_in {
+        background: #e0f7fa;
+        color: #3F51B5;
+        font-weight: bold;
+    }
+
+    .name-background {
+        background: #aa4a99;
+        color: #fff;
+        font-weight: bold;
+    }
+
+    .special-background {
+        background: #ff75f8;
+        color: #fff;
+        font-weight: bold;
+    }
+
+    .status-row {
+        height: 31px;
+        width: 33.3%;
+        line-height: 1.2;
+    }
+
+    .timeweather {
+        background-color: hsla(187, 72%, 93%, 0.12);
+        width: 450px;
+        margin: auto;
+        color: #aa4a99;
+        box-shadow: 0 0 4px rgba(0, 243, 255, 0.25), 0 4px 8px rgba(162, 241, 254, 0.45);
+        text-shadow: 2px 2px rgba(0, 243, 255, 0.15);
+        border-radius: 40px;
+        opacity: 0.9;
+    }
+
+    #time {
+        font-size: 80px;
+        font-weight: 300;
+        width: 425px;
+        margin: auto;
+        text-align: center;
+    }
+
+    #weather {
+        width: 425px;
+        margin: auto;
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+    #weather h2 {
+        margin: 0 0 8px;
+        font-size: 100px;
+        font-weight: 300;
+        text-align: center;
+        text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.15);
+    }
+
+    #weather ul {
+        margin: 0;
+        padding: 0;
+        color: #8c1b1d;
+    }
+
+    #weather li {
+        padding: 20px;
+        display: inline-block;
+        border-radius: 5px;
+    }
+
+    #weather .currently {
+        margin: 0 20px;
+    }
+</style>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery.simpleWeather/3.1.0/jquery.simpleWeather.min.js"></script>
+<script>
+    $(document).ready(function () {
+            getWeather(); //Get the initial weather.
+            setInterval(getWeather, 600000); //Update the weather every 10 minutes.
+        });
+
+        function getWeather() {
+            $.simpleWeather({
+                location: '07424',
+                unit: 'f',
+                success: function (weather) {
+                    html = '<h2>' + weather.temp + '&deg;' + weather.units.temp + '</h2>';
+                    //html += '<ul><li>Woodland Park, '+weather.region+'</li>';
+                    html += '<li class="currently">' + weather.currently + '</li>';
+                    //html += '<li>'+weather.alt.temp+'&deg;C</li></ul>';
+                    $("#weather").html(html);
+                },
+                error: function (error) {
+                    $("#weather").html('<p>' + error + '</p>');
+                }
+            });
+        }
+</script>
+<div id="board-container" oncontextmenu="return(false);">
+    <div class="headers">
+        <header>
+            <h3 class="name column font">Name</h3>
+            <h3 class="description column font">Description</h3>
+            <h3 class="time column font">Time</h3>
+            <h3 class="car column font">Car</h3>
+        </header>
+        <header>
+            <h3 class="name column font">Name</h3>
+            <h3 class="description column font">Description</h3>
+            <h3 class="time column font">Time</h3>
+            <h3 class="car column font">Car</h3>
+        </header>
+        <header>
+            <h3 class="name column font">Name</h3>
+            <h3 class="description column font">Description</h3>
+            <h3 class="time column font">Time</h3>
+            <h3 class="car column font">Car</h3>
+        </header>
+    </div>
+    <div class="rows-container">
+        <% _.forEach(currentstatus, function(status) { %>
+        <div class="status-row" id="<%= status.id %>">
+
+            <div class="name namebtn column font <% if (status.username.length > 7) { %> smaller-name <% } %> 
+                <% if (status.is_in) { %> 
+                        name-background
+                    <% } %>"
+                id="name_<%= status.id %>" onclick="updateCurrentInOutStatus(this)"><%= status.username %>
+            </div>
+
+            <div class="description smaller-font column">
+                <input type="text" id="description_<%= status.id %>" class="description_field" value="<%= status.description %>" 
+                onkeyup="updateCurrentDescription(this)">
+            </div>
+
+            <div class="time smaller-time column" id="">
+                <input type="text" id="time_<%= status.id %>" value="<%= status.time %>" 
+                onkeyup="updateCurrentTime(this)">
+            </div>
+
+            <div class="car smaller-font column" id="car_<%= status.id %>">
+                <select onchange="updateCurrentCar(this)">
+                    <option value=""></option>
+                    <% _.forEach(cars, function(car) { %>
+                    <option value="<%= car.car %>"><%= car.car %></option>
+                    <% }); %>
+                    <option value="<%= status.car %>" selected="selected"><%= status.car %></option>
+                </select>
+            </div>
+        </div>
+    <% }); %>
+    <div class="timeweather card">
+        <div id="time"></div>
+        <div id="weather"></div
+    </div>
+   </div> 
+</div>
+<script>
+
+    function updateCurrentInOutStatus(name) {
+        let id = $(name).parent().attr('id');
+        
+        $(name).toggleClass('name-background');
+                
+        if ($(name).hasClass('name-background')) {
+            io.socket.put('/currentstatus/name/' + id, {
+                is_in: "true"
+            });
+        } else {
+            io.socket.put('/currentstatus/name/' + id, {
+                is_in: "false"
+            });
+        }
+    }
+
+    function updateCurrentDescription(description) {
+        let id = $(description).parent().parent().attr('id');
+        io.socket.put('/currentstatus/description/' + id, {
+            description: $(description).val()
+        });
+    }
+
+    function updateCurrentTime(time) {
+        let id = $(time).parent().parent().attr('id');
+        io.socket.put('/currentstatus/time/' + id, {
+            time: $(time).val()
+        });
+    }
+
+    function updateCurrentCar(car) {
+        let id = $(car).parent().parent().attr('id');
+        io.socket.put('/currentstatus/car/' + id, {
+            car: $(car).val()
+        });
+    }
+
+    function saveHistory() {
+        let id = $(this).parent().parent().attr('id');
+        let name = $('#name_' + id).text();
+        let description = $('#description_' + id).val();
+        let time = $('#time_' + id).val();
+        let car = $('#car_' + id + ' select').val();
+        
+        io.socket.post('/history', {
+            user_id: id,
+            name: name,
+            description: description,
+            time: time,
+            car: car
+        });
+    }
+
+     $('.description_field').change(function() {
+        let element = this;
+        if ($(element).val() != "") {
+            setTimeout(function () {
+                saveHistory.call(element)
+            }, 240000);
+        }
+    });
+
+    io.socket.on('is_in', function(data) {
+        $('#name_' + data.id).toggleClass('name-background');
+    });
+
+    io.socket.on('description', function(data) {
+        $('#description_' + data.id).val(data.description);
+    });
+
+    io.socket.on('time', function(data) {
+        $('#time_' + data.id).val(data.time);
+    });
+
+    io.socket.on('car', function(data) {
+        $('#car_' + data.id + ' option[selected]').removeAttr('selected', 'selected');
+        $('#car_' + data.id + ' option[value="' + data.car + '"]').remove();
+        $('#car_' + data.id + ' select').append('<option value="'+ data.car  + '"selected>' +  data.car  +'</option>');
+    });
+    // TODO update page without reloading
+    io.socket.on('updateuser', function (data) {
+        window.location.reload(true);
+    });
+
+    io.socket.on('newuser', function (data) {
+        window.location.reload(true);
+    });
+
+    io.socket.on('disableuser', function (data) {
+        window.location.reload(true);
+    });    
+
+    io.socket.on('deleteuser', function (data) {
+        window.location.reload(true);
+    });
+
+    io.socket.on('updatecar', function (data) {
+        window.location.reload(true);
+    });
+
+    io.socket.on('newcar', function (data) {
+        window.location.reload(true);
+    });
+
+    io.socket.on('deletecar', function (data) {
+        window.location.reload(true);
+    });
+
+    function checkTime(i) {
+        if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
+        return i;
+    }
+
+    (function showTime() {
+		var today = new Date();
+        var h = today.getHours();
+        if (h > 12) h = h - 12;
+        var m = today.getMinutes();
+        var s = today.getSeconds();
+        m = checkTime(m);
+        s = checkTime(s);
+        document.getElementById('time').innerHTML =
+        h + ":" + m + ":" + s;
+        var t = setTimeout(showTime, 1000);
+    })();
+    
+    $(function () {
+        $('.column').children('input').onScreenKeyboard({
+            rewireReturn : 'submit',
+            rewireTab : true,
+            draggable: true
+        });
+    });
+
+    $(function () {
+        $("#draggable").draggable();
+    });
+
+    function clearField() {
+        $('.osk-focused').val("");
+        $('.osk-focused').trigger("onchange");
+        updateCurrentDescription('.osk-focused');
+        return false;
+    }
+</script>

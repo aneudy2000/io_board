@@ -1,0 +1,146 @@
+<style>
+    input {
+        width: 78%;
+        margin: 5px 5px 5px 0;
+        padding: 7px 10.5px;
+        border: 1px solid #ebebeb;
+        border-radius: 5px;
+    }
+
+    @media screen and (max-width: 768px) {
+        input {
+            width: 58%;
+        }
+    }
+</style>
+<div class="container">
+    <div id="car-wrap">
+        <div id="addcar" class="row-block shadow border border-radius padding5">
+            <input type="text" id="addcar_field" placeholder="e.g. TBR - TOYOTA COROLLA BROWN">
+            <button class="btn btn-default" onclick="addCar()">Add Car</button>
+        </div>
+        <div id="editcars" class="row-block shadow border border-radius padding5">
+            <% _.forEach(cars, function(car) { %>
+            <div id="<%= car.id %>" class="car padding5">
+                <input type="text" class="carname" value="<%= car.car %>">
+                <button type="button" class="btn btn-default" onclick="updateCar(this)">Update</button>
+                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirm-delete"
+                data-id="<%= car.id %>">
+                    Delete
+                </button>
+            </div>
+            <% }); %>
+        </div>
+    </div>
+</div>
+<!-- Error message modal -->
+<div id="message" class="modal fade" tabindex="-1" role="dialog" id="message">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Confirm deletee user modal -->
+<div id="confirm-delete" class="modal fade" tabindex="-1" role="dialog" id="message">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button id="confirm-delete-button" type="button" class="btn btn-danger" data-dismiss="modal">Yes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('#confirm-delete').on('show.bs.modal', function (event) {
+        let button = $(event.relatedTarget);
+        let id = button.data('id');
+        let car = $('#' + id + ' .carname').val();
+        let modal = $(this);
+        modal.find('.modal-body p').text('Are you sure you want to delete ' + car + '?');
+        modal.find('#confirm-delete-button').attr('onclick', 'deleteCar(' + id + ')');
+    });
+
+    function error(error) {
+        let error_message;
+        if (error == 'Error') error_message = 'There was an error. Try again later.';
+        if (error == 'Empty') error_message = 'Enter the car\'s name.';
+        if (error == 'Exists') error_message = 'There is already a car with that name.';
+        $('#message .modal-body p').text(error_message);
+        $('#message').modal();
+    }
+
+    function addCar() {
+        let car = $('#addcar_field').val().toUpperCase();
+        if (car == '') {
+            $('#message .modal-body p').text('Enter car\'s name.');
+            $('#message').modal();
+        } else {
+            io.socket.post('/car/create/', {
+                car: car
+            }, function (data) {
+                if (data.name != 'Success') error(data.name);
+            });
+        }
+    }
+
+    function updateCar(element) {
+        let id = $(element).parent().attr('id');
+        let car = $('#' + id + ' .carname').val().toUpperCase();
+        io.socket.put('/car/update/' + id, {
+            car: car
+        }, function(data) {
+            if (data.name == 'Success') {
+                $('#message .modal-body p').text(car + ' was updated.');
+                $('#message').modal();
+            } else {
+                error(data.name);
+            }
+        });
+    }
+
+    function deleteCar(id) {
+        io.socket.delete('/car/delete/' + id, {
+            id: id
+        }, function (data) {
+            if (data.name != 'Success') error(data.name);
+        });
+    }
+
+    io.socket.on('newcar', function (data) {
+        $('#editcars').append(
+            '<div id="' + data.id + '" class="car padding5">' + 
+                '<input type="text" class="carname" value="' + data.car + '"> ' +
+                    ' <button type="button" class="btn btn-default" onclick="updateCar(this)">Update</button> ' +
+                    ' <button type="button" class="btn btn-danger" onclick="removeCar(this)">Delete</button> ' +
+            '</div>'
+        );
+    });
+
+    io.socket.on('updatecar', function (data) {
+        $('#' + data.id + ' .carname').val(data.car);
+    });
+
+    io.socket.on('deletecar', function (data) {
+        $('#' + data.id).remove();
+    });
+</script>
